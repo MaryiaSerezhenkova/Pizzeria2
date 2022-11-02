@@ -3,9 +3,9 @@ package pizza.api;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Меню
- */
+///**
+// * Меню
+// */
 public interface IMenu {
 
     long getId();
@@ -18,25 +18,25 @@ public interface IMenu {
 
     void setDtUpdate(LocalDateTime dtUpdate);
 
-    /**
-     * Получить название меню
-     * @return
-     */
+//    /**
+//     * Получить название меню
+//     * @return
+//     */
     String getName();
 
     void setName(String name);
 
-    /**
-     * Доступные к заказу пункты
-     * @return пункты которые можно заказать
-     */
+//    /**
+//     * Доступные к заказу пункты
+//     * @return пункты которые можно заказать
+//     */
     List<IMenuRow> getItems();
 
 
-    /**
-     * Меню доступно к использованию для заказа?
-     * @return
-     */
+//    /**
+//     * Меню доступно к использованию для заказа?
+//     * @return
+//     */
     boolean isEnabled();
 
     void setEnabled(boolean enabled);

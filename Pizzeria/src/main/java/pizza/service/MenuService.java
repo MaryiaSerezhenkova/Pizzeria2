@@ -2,7 +2,9 @@ package pizza.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 import pizza.api.IMenu;
+import pizza.dao.MenuDaoSingleton;
 import pizza.dao.api.IMenuDao;
 import pizza.service.api.IMenuService;
 
@@ -13,7 +15,10 @@ public class MenuService implements IMenuService {
 	public MenuService(IMenuDao menuDao) {
 		this.menuDao = menuDao;
 	}
-
+	public MenuService() {
+		this.menuDao=MenuDaoSingleton.getInstance();
+	}
+	
 	public List<IMenu> get() {
 		return menuDao.get();
 	}
@@ -50,7 +55,21 @@ public class MenuService implements IMenuService {
 	}
 
 	public void delete(long id, LocalDateTime dtUpdate) {
-		// TODO Auto-generated method stub
+		IMenu readed = menuDao.read(id);
 
+		if (readed == null) {
+			throw new IllegalArgumentException("Меню не найдено");
+		}
+
+		if (!readed.getDtUpdate().isEqual(dtUpdate)) {
+			throw new IllegalArgumentException("К сожалению меню уже было отредактировано кем-то другим");
+		}
+
+		menuDao.delete(id, dtUpdate);
+
+	}
+	public static IMenuService getInstance() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

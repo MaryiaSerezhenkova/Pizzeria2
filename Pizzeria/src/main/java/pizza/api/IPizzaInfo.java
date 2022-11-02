@@ -1,24 +1,28 @@
 package pizza.api;
-/**
- * Информация о пицце
- */
+
+import java.time.LocalDateTime;
+
 public interface IPizzaInfo {
 
-    /**
-     * Название пиццы
-     * @return
-     */
-    String getName();
+	long getId();
 
-    /**
-     * Описание/состав пиццы
-     * @return
-     */
-    String getDescription();
+	LocalDateTime getDtCreate();
 
-    /**
-     * Итоговый размер пиццы которую приготовят
-     * @return
-     */
-    int getSize();
+	void setDtCreate(LocalDateTime dtCreate);
+
+	LocalDateTime getDtUpdate();
+
+	void setDtUpdate(LocalDateTime dtUpdate);
+
+	String getName();
+
+	String getDescription();
+
+	int getSize();
+
+	void setName(String name);
+
+	void setDescription(String description);
+
+	void setSize(int size);
 }

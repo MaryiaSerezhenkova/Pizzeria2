@@ -2,7 +2,7 @@ package pizza.dao;
 
 import javax.sql.DataSource;
 import pizza.api.IMenu;
-import pizza.api.dto.Menu;
+import pizza.api.core.Menu;
 import pizza.dao.api.IMenuDao;
 import java.sql.*;
 import java.time.LocalDateTime;
