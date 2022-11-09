@@ -8,6 +8,6 @@ public interface IDao<TYPE> {
     TYPE create(TYPE item);
     TYPE read(long id);
     List<TYPE> get();
-    TYPE update(long id, LocalDateTime dtUpdate, TYPE item);
+    TYPE update(long id, LocalDateTime dtUpdate, TYPE type);
     void delete(long id, LocalDateTime dtUpdate);
 }

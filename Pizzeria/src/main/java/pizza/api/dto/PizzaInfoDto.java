@@ -6,6 +6,10 @@ public class PizzaInfoDto {
 	private String description;
 	private int size;
 
+	public PizzaInfoDto() {
+		super();
+		
+	}
 	public PizzaInfoDto(String name, String description, int size) {
 		super();
 		this.name = name;

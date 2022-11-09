@@ -1,14 +1,13 @@
 package pizza.api.dto;
 
 import java.util.List;
-import pizza.api.IMenuRow;
 
 public class MenuDTO {
 
 	private String name;
 	private boolean enabled;
 
-	private List<IMenuRow> items;
+	private List<MenuRowDTO> items;
 
 	public MenuDTO(String name, boolean enabled) {
 
@@ -24,7 +23,7 @@ public class MenuDTO {
 		return enabled;
 	}
 
-	public List<IMenuRow> getItems() {
+	public List<MenuRowDTO> getItems() {
 		return items;
 	}
 

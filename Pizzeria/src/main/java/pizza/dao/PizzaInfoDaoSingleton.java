@@ -3,12 +3,12 @@ import pizza.dao.api.DataSourceCreator;
 import pizza.dao.api.IPizzaInfoDao;
 
 public class PizzaInfoDaoSingleton {
-	private PizzaInfoDao pizzaInfoDao;
-	private volatile static PizzaInfoDaoSingleton instance;
+	private final IPizzaInfoDao pizzaInfoDao;
+	private volatile static PizzaInfoDaoSingleton instance=null;
 
 	public PizzaInfoDaoSingleton() {
 		try {
-			this.pizzaInfoDao = (PizzaInfoDao) new PizzaInfoDao(DataSourceCreator.getInstance());
+			this.pizzaInfoDao = new PizzaInfoDao(DataSourceCreator.getInstance());
 		} catch (Exception e) {
 			throw new RuntimeException("Возникли проблемы с созданием слоя доступа к данным", e);
 		}

@@ -1,27 +1,22 @@
 package pizza.service;
+
 import java.time.LocalDateTime;
 import java.util.List;
+
 import pizza.api.IPizzaInfo;
 import pizza.api.core.PizzaInfo;
+import pizza.api.dto.PizzaInfoDto;
 import pizza.api.mapper.PizzaInfoMapper;
-import pizza.dao.PizzaInfoDaoSingleton;
+import pizza.api.validators.PizzaInfoValidator;
 import pizza.dao.api.IPizzaInfoDao;
 import pizza.service.api.IPizzaInfoService;
 
 public class PizzaInfoService implements IPizzaInfoService {
 	private final IPizzaInfoDao pizzaInfoDao;
+	private static PizzaInfoValidator pizzaInfoValidator;
 
 	public PizzaInfoService(IPizzaInfoDao pizzaInfoDao) {
 		this.pizzaInfoDao = pizzaInfoDao;
-	}
-	public PizzaInfoService() {
-		this.pizzaInfoDao=PizzaInfoDaoSingleton.getInstance();
-	}
-	@Override
-	public IPizzaInfo create(IPizzaInfo item) {
-		item.setDtCreate(LocalDateTime.now());
-		item.setDtUpdate(item.getDtCreate());
-		return pizzaInfoDao.create(item);
 	}
 
 	@Override
@@ -33,12 +28,13 @@ public class PizzaInfoService implements IPizzaInfoService {
 	public List<IPizzaInfo> get() {
 		return pizzaInfoDao.get();
 	}
-	 public PizzaInfo get(Long id) {
-	        return PizzaInfoMapper.pizzaInfoOutputMapping(this.pizzaInfoDao.read(id));
-	    }
+
+	public PizzaInfo get(Long id) {
+		return PizzaInfoMapper.pizzaInfoOutputMapping(this.pizzaInfoDao.read(id));
+	}
 
 	@Override
-	public IPizzaInfo update(long id, LocalDateTime dtUpdate, IPizzaInfo item) {
+	public IPizzaInfo update(long id, LocalDateTime dtUpdate, PizzaInfoDto item) {
 		IPizzaInfo readed = pizzaInfoDao.read(id);
 
 		if (readed == null) {
@@ -53,7 +49,7 @@ public class PizzaInfoService implements IPizzaInfoService {
 		readed.setName(item.getName());
 		readed.setDescription(item.getDescription());
 		readed.setSize(item.getSize());
-		
+
 		return pizzaInfoDao.update(id, dtUpdate, readed);
 	}
 
@@ -69,7 +65,24 @@ public class PizzaInfoService implements IPizzaInfoService {
 		}
 
 		pizzaInfoDao.delete(id, dtUpdate);
+
+	}
+
+//	@Override
+//	public IPizzaInfo create(IPizzaInfo item) {
+//		item.setDtCreate(LocalDateTime.now());
+//		item.setDtUpdate(item.getDtCreate());
+//		return pizzaInfoDao.create(item);
+//
+//	}
+
+	@Override
+	public IPizzaInfo create(PizzaInfoDto dto) {
 		
+		IPizzaInfo pizzaInfo = PizzaInfoMapper.pizzaInfoInputMapping(dto);
+		pizzaInfo.setDtCreate(LocalDateTime.now());
+		pizzaInfo.setDtUpdate(pizzaInfo.getDtCreate());
+		return PizzaInfoMapper.pizzaInfoOutputMapping(this.pizzaInfoDao.create(pizzaInfo));
 	}
 
 }

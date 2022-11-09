@@ -3,6 +3,7 @@ package pizza.dao;
 import javax.sql.DataSource;
 import pizza.api.IMenu;
 import pizza.api.core.Menu;
+import pizza.api.dto.MenuDTO;
 import pizza.dao.api.IMenuDao;
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -67,8 +68,8 @@ public class MenuDao implements IMenuDao {
 	}
 
 	public IMenu mapper(ResultSet rs) throws SQLException {
-		return new Menu(rs.getLong(1), rs.getObject(2, LocalDateTime.class), rs.getObject(3, LocalDateTime.class),
-				rs.getString(4), rs.getBoolean(5));
+		return new Menu(rs.getLong("id"), rs.getObject("dt_create", LocalDateTime.class), rs.getObject("dt_update", LocalDateTime.class),
+				rs.getString("name"), rs.getBoolean("enabled"));
 	}
 
 	public IMenu create(IMenu item) {

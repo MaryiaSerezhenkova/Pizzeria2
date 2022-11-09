@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public interface IPizzaInfo {
 
 	long getId();
+	void setId(Long id);
 
 	LocalDateTime getDtCreate();
 

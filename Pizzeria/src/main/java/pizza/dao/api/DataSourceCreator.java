@@ -18,7 +18,7 @@ public class DataSourceCreator {
         cpds.setJdbcUrl("jdbc:postgresql://localhost:5432/pizzeria");
 		cpds.setUser("postgres");
 		cpds.setPassword("sql");
-        cpds.setMinPoolSize(5);
+        cpds.setMinPoolSize(10);
         cpds.setAcquireIncrement(5);
         cpds.setMaxPoolSize(20);
         cpds.setMaxStatements(180);

@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import pizza.api.IPizzaInfo;
 
 public class PizzaInfo implements IPizzaInfo {
-	private long id;
+	private Long id;
 	private LocalDateTime dtCreate;
 	private LocalDateTime dtUpdate;
 	private String name;
@@ -34,7 +34,7 @@ public class PizzaInfo implements IPizzaInfo {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

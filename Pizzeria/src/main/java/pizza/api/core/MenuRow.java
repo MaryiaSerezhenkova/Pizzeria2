@@ -2,6 +2,7 @@ package pizza.api.core;
 
 import java.time.LocalDateTime;
 
+import pizza.api.IMenu;
 import pizza.api.IMenuRow;
 import pizza.api.IPizzaInfo;
 
@@ -95,6 +96,16 @@ public class MenuRow implements IMenuRow {
 		builder.append(menu);
 		builder.append("]");
 		return builder.toString();
+	}
+
+	@Override
+	public void setPizzaInfo(IPizzaInfo pizzaInfo) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setMenu(IMenu menu) {
 	}
 
 }

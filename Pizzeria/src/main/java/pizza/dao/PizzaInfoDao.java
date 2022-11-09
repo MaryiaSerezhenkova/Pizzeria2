@@ -17,8 +17,7 @@ import pizza.dao.api.IPizzaInfoDao;
 
 public class PizzaInfoDao implements IPizzaInfoDao {
 
-	private static final String INSERT_SQL = "INSERT INTO app.pizza_info(\r\n"
-			+ "	id, dt_create, dt_update, name, description, size)\r\n" + "	VALUES (?, ?, ?, ?, ?, ?);";
+	private static final String INSERT_SQL = "INSERT INTO app.pizza_info(dt_create, dt_update, name, description, size) VALUES (?, ?, ?, ?, ?);";
 
 	private static final String SELECT_BY_ID_SQL = "SELECT id, dt_create, dt_update, name, description, size\r\n"
 			+ "	FROM app.pizza_info WHERE id = ?;";
@@ -47,8 +46,12 @@ public class PizzaInfoDao implements IPizzaInfoDao {
 			stm.setString(3, item.getName());
 			stm.setString(4, item.getDescription());
 			stm.setInt(5, item.getSize());
-			int updated = stm.executeUpdate();
-			return read(stm.getGeneratedKeys().getLong(1));
+			stm.executeUpdate();
+			ResultSet rs = stm.getGeneratedKeys();
+			if (rs.next()) {
+				item.setId(rs.getLong(1));
+			}
+			return item;
 		} catch (SQLException e) {
 			throw new RuntimeException("При сохранении данных произошла ошибка", e);
 		}
@@ -90,7 +93,6 @@ public class PizzaInfoDao implements IPizzaInfoDao {
 		return pizzaArr;
 	}
 
-	@Override
 	public IPizzaInfo update(long id, LocalDateTime dtUpdate, IPizzaInfo item) {
 		try (Connection conn = ds.getConnection();
 				PreparedStatement stm = conn.prepareStatement(UPDATE_SQL, Statement.RETURN_GENERATED_KEYS)) {
@@ -144,6 +146,5 @@ public class PizzaInfoDao implements IPizzaInfoDao {
 				rs.getObject("dt_update", LocalDateTime.class), rs.getString("name"), rs.getString("description"),
 				rs.getInt("size"));
 	}
-
 
 }
