@@ -25,9 +25,8 @@ public class PizzaInfoDao implements IPizzaInfoDao {
 	private static final String SELECT_SQL = "SELECT id, dt_create, dt_update, name, description, size\r\n"
 			+ "	FROM app.pizza_info;";
 
-	private static final String UPDATE_SQL = "UPDATE app.pizza_info\r\n"
-			+ "	SET id=?, dt_create=?, dt_update=?, name=?, description=?, size=?\r\n"
-			+ "\tWHERE id = ? and dt_update = ?;";
+	private static final String UPDATE_SQL = "UPDATE app.pizza_info"
+			+ "	SET dt_update=?, name=?, description=?, size=? WHERE id = ? and dt_update < ?;";
 
 	private static final String DELETE_SQL = "DELETE FROM app.pizza_info" + "\tWHERE id = ? and dt_update = ?;";
 

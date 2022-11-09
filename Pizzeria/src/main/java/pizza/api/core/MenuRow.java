@@ -13,6 +13,15 @@ public class MenuRow implements IMenuRow {
 	private PizzaInfo pizzaInfo;
 	private double price;
 	private Menu menu;
+	private long menuId;
+
+	public long getMenuId() {
+		return menuId;
+	}
+
+	public void setMenuId(long menuId) {
+		this.menuId = menuId;
+	}
 
 	public MenuRow(long id, LocalDateTime dtCreate, LocalDateTime dtUpdate, PizzaInfo pizzaInfo, double price,
 			Menu menu) {
@@ -106,6 +115,7 @@ public class MenuRow implements IMenuRow {
 
 	@Override
 	public void setMenu(IMenu menu) {
+		
 	}
 
 }
