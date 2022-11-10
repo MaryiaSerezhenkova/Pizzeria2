@@ -68,8 +68,8 @@ public class MenuDao implements IMenuDao {
 	}
 
 	public IMenu mapper(ResultSet rs) throws SQLException {
-		return new Menu(rs.getLong("id"), rs.getObject("dt_create", LocalDateTime.class), rs.getObject("dt_update", LocalDateTime.class),
-				rs.getString("name"), rs.getBoolean("enabled"));
+		return new Menu(rs.getLong("id"), rs.getObject("dt_create", LocalDateTime.class),
+				rs.getObject("dt_update", LocalDateTime.class), rs.getString("name"), rs.getBoolean("enable"));
 	}
 
 	public IMenu create(IMenu item) {
@@ -79,9 +79,12 @@ public class MenuDao implements IMenuDao {
 			stm.setObject(2, item.getDtUpdate());
 			stm.setString(3, item.getName());
 			stm.setBoolean(4, item.isEnabled());
-
-			int updated = stm.executeUpdate();
-			return read(stm.getGeneratedKeys().getLong(1));
+			stm.executeUpdate();
+			ResultSet rs = stm.getGeneratedKeys();
+			if (rs.next()) {
+				item.setId(rs.getLong(1));
+			}
+			return item;
 		} catch (SQLException e) {
 			throw new RuntimeException("При сохранении данных произошла ошибка", e);
 		}

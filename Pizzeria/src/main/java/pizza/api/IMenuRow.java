@@ -22,4 +22,5 @@ public interface IMenuRow {
 	IMenu getMenu();
 
 	void setMenu(IMenu menu);
+	void setId(long id);
 }

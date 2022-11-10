@@ -10,15 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
 import pizza.api.IMenuRow;
-import pizza.api.core.Menu;
 import pizza.api.core.MenuRow;
-import pizza.api.core.PizzaInfo;
 import pizza.dao.api.IMenuRowDao;
 
 public class MenuRowDao implements IMenuRowDao {
 
 	private static final String INSERT_SQL = "INSERT INTO app.menu_row(\r\n"
-			+ "	id, dt_create, dt_update, info, price, menu)\r\n" + "	VALUES (?, ?, ?, ?, ?, ?);";
+			+ "dt_create, dt_update, info, price, menu)\r\n" + "	VALUES (?, ?, ?, ?, ?, ?);";
 
 	private static final String SELECT_BY_ID_SQL = "SELECT id, dt_create, dt_update, info, price, menu\n"
 			+ "	FROM app.menu_row;" + "\tWHERE id = ?;";
@@ -26,8 +24,8 @@ public class MenuRowDao implements IMenuRowDao {
 	private static final String SELECT_SQL = "SELECT id, dt_create, dt_update, info, price, menu\n"
 			+ "	FROM app.menu_row;";
 
-	private static final String UPDATE_SQL = "UPDATE app.menu_row\n"
-			+ "	SET id=?, dt_create=?, dt_update=?, info=?, price=?, menu=?" + "\tWHERE id = ? and dt_update = ?;";
+	private static final String UPDATE_SQL = "UPDATE app.menu_row\n" + "	SET dt_update=?, info=?, price=?, menu=?"
+			+ "\tWHERE id = ? and dt_update = ?;";
 
 	private static final String DELETE_SQL = "DELETE FROM app.menu_row" + "\tWHERE id = ? and dt_update = ?;";
 
@@ -39,8 +37,8 @@ public class MenuRowDao implements IMenuRowDao {
 
 	public IMenuRow mapper(ResultSet rs) throws SQLException {
 		return new MenuRow(rs.getLong("id"), rs.getObject("dt_create", LocalDateTime.class),
-				rs.getObject("dt_update", LocalDateTime.class), rs.getObject("info", PizzaInfo.class),
-				rs.getDouble("price"), rs.getObject("menu", Menu.class));
+				rs.getObject("dt_update", LocalDateTime.class), rs.getLong("info"), rs.getDouble("price"),
+				rs.getLong("menu"));
 	}
 
 	@Override
@@ -52,11 +50,16 @@ public class MenuRowDao implements IMenuRowDao {
 			stm.setObject(3, item.getInfo());
 			stm.setDouble(4, item.getPrice());
 			stm.setObject(5, item.getMenu());
-			int updated = stm.executeUpdate();
-			return read(stm.getGeneratedKeys().getLong(1));
+			stm.executeUpdate();
+			ResultSet rs = stm.getGeneratedKeys();
+			if (rs.next()) {
+				item.setId(rs.getLong(1));
+			}
+			return item;
 		} catch (SQLException e) {
 			throw new RuntimeException("При сохранении данных произошла ошибка", e);
 		}
+
 	}
 
 	@Override

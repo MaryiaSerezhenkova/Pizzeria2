@@ -1,37 +1,58 @@
 package pizza.api.dto;
 
-import pizza.api.core.Menu;
-import pizza.api.core.PizzaInfo;
 
 public class MenuRowDTO {
-	
-	private PizzaInfo pizzaInfo;
+
+	private long pizzaInfoId;
 	private double price;
-	private Menu menu;
-	public MenuRowDTO(PizzaInfo pizzaInfo, double price, Menu menu) {
+	private long menuId;
+
+	public MenuRowDTO() {
 		super();
-		this.pizzaInfo = pizzaInfo;
+	}
+
+	public MenuRowDTO(long pizzaInfoId, double price, long menuId) {
+		super();
+		this.pizzaInfoId = pizzaInfoId;
 		this.price = price;
-		this.menu = menu;
+		this.menuId = menuId;
 	}
-	public PizzaInfo getPizzaInfo() {
-		return pizzaInfo;
+
+	public long getPizzaInfoId() {
+		return pizzaInfoId;
 	}
-	public void setPizzaInfo(PizzaInfo pizzaInfo) {
-		this.pizzaInfo = pizzaInfo;
+
+	public void setPizzaInfoId(long pizzaInfoId) {
+		this.pizzaInfoId = pizzaInfoId;
 	}
+
 	public double getPrice() {
 		return price;
 	}
+
 	public void setPrice(double price) {
 		this.price = price;
 	}
-	public Menu getMenu() {
-		return menu;
-	}
-	public void setMenu(Menu menu) {
-		this.menu = menu;
+
+	public long getMenuId() {
+		return menuId;
 	}
 
-	
+	public void setMenuId(long menuId) {
+		this.menuId = menuId;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("MenuRowDTO [pizzaInfoId=");
+		builder.append(pizzaInfoId);
+		builder.append(", price=");
+		builder.append(price);
+		builder.append(", menuId=");
+		builder.append(menuId);
+		builder.append("]");
+		return builder.toString();
+	}
+
 }

@@ -9,6 +9,10 @@ public class MenuDTO {
 
 	private List<MenuRowDTO> items;
 
+	public MenuDTO() {
+		super();
+	}
+
 	public MenuDTO(String name, boolean enabled) {
 
 		this.name = name;

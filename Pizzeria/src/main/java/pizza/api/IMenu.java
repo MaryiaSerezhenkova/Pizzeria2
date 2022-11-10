@@ -40,4 +40,5 @@ public interface IMenu {
     boolean isEnabled();
 
     void setEnabled(boolean enabled);
+    void setId(long id);
 }

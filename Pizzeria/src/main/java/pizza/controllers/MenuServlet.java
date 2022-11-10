@@ -2,6 +2,7 @@ package pizza.controllers;
 
 
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,7 +10,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import pizza.api.IMenu;
 import pizza.api.core.JsonConverter;
+import pizza.api.dto.MenuDTO;
+import pizza.api.exceptions.ValidationException;
 import pizza.api.validators.MenuValidator;
 import pizza.service.MenuServiceSingleton;
 import pizza.service.api.IMenuService;
@@ -57,10 +61,25 @@ public class MenuServlet extends HttpServlet {
     //body json
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
-        req.setCharacterEncoding("UTF-8");
-        resp.setContentType("text/html; charset=UTF-8");
-    }
+    	try {
+			resp.setCharacterEncoding(ENCODING);
+			resp.setContentType(CONTENT_TYPE);
+			String jsonString = req.getReader().lines().collect(Collectors.joining());
+			MenuDTO menu = JsonConverter.fromJsonToMenu(jsonString);
+			try {
+				menuValidator.validate(menu);
+			} catch (ValidationException e) {
+				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			}
+			IMenu menuDto = menuService.create(menu);
+			resp.getWriter().write(JsonConverter.fromMenuToJson(menuDto));
+			resp.setStatus(HttpServletResponse.SC_CREATED);
+
+		} catch (Exception e) {
+			resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			System.err.println(e);
+		}
+	}
 
     //UPDATE POSITION
     //need param id
