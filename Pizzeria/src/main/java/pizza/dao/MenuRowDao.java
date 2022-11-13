@@ -8,9 +8,13 @@ import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.sql.DataSource;
+
 import pizza.api.IMenuRow;
+import pizza.api.IPizzaInfo;
 import pizza.api.core.MenuRow;
+import pizza.api.core.PizzaInfo;
 import pizza.dao.api.IMenuRowDao;
 
 public class MenuRowDao implements IMenuRowDao {
@@ -25,7 +29,7 @@ public class MenuRowDao implements IMenuRowDao {
 			+ "	FROM app.menu_row;";
 
 	private static final String UPDATE_SQL = "UPDATE app.menu_row\n" + "	SET dt_update=?, info=?, price=?, menu=?"
-			+ "\tWHERE id = ? and dt_update = ?;";
+			+ "\tWHERE id = ? and dt_update < ?;";
 
 	private static final String DELETE_SQL = "DELETE FROM app.menu_row" + "\tWHERE id = ? and dt_update = ?;";
 
@@ -37,6 +41,15 @@ public class MenuRowDao implements IMenuRowDao {
 
 	public IMenuRow mapper(ResultSet rs) throws SQLException {
 		return new MenuRow(rs.getLong("id"), rs.getObject("dt_create", LocalDateTime.class),
+				rs.getObject("dt_update", LocalDateTime.class), rs.getLong("info"), rs.getDouble("price"),
+				rs.getLong("menu"));
+	}
+
+	private IMenuRow menuRowMapper(ResultSet rs) throws SQLException {
+		IPizzaInfo pizzaInfo = new PizzaInfo(rs.getLong("id"), rs.getObject("dt_create", LocalDateTime.class),
+				rs.getObject("dt_update", LocalDateTime.class), rs.getString("name"), rs.getString("description"),
+				rs.getInt("size"));
+		return new MenuRow(rs.getLong("id"), pizzaInfo, rs.getObject("dt_create", LocalDateTime.class),
 				rs.getObject("dt_update", LocalDateTime.class), rs.getLong("info"), rs.getDouble("price"),
 				rs.getLong("menu"));
 	}
@@ -80,9 +93,31 @@ public class MenuRowDao implements IMenuRowDao {
 	}
 
 	@Override
-	public IMenuRow update(long id, LocalDateTime dtUpdate, IMenuRow type) {
-		// TODO Auto-generated method stub
-		return null;
+	public IMenuRow update(long id, LocalDateTime dtUpdate, IMenuRow item) {
+		try (Connection conn = ds.getConnection();
+				PreparedStatement stm = conn.prepareStatement(UPDATE_SQL, Statement.RETURN_GENERATED_KEYS)) {
+			stm.setObject(1, item.getDtUpdate());
+			stm.setLong(2, item.getPizzaInfoId());
+			stm.setDouble(3, item.getPrice());
+			stm.setLong(4, item.getMenuId());
+
+			stm.setLong(5, id);
+			stm.setObject(6, dtUpdate);
+
+			int countUpdatedRows = stm.executeUpdate();
+
+			if (countUpdatedRows != 1) {
+				if (countUpdatedRows == 0) {
+					throw new IllegalArgumentException("Не смогли обновить какую либо запись");
+				} else {
+					throw new IllegalArgumentException("Обновили более одной записи");
+				}
+			}
+
+			return read(id);
+		} catch (SQLException e) {
+			throw new RuntimeException("При сохранении данных произошла ошибка", e);
+		}
 	}
 
 	@Override

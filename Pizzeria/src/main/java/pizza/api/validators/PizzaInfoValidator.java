@@ -4,13 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pizza.api.dto.PizzaInfoDto;
+import pizza.api.exceptions.ValidationException;
 
-public class PizzaInfoValidator {
+public class PizzaInfoValidator  implements IValidator<PizzaInfoDto> {
 	public PizzaInfoValidator() {
 		super();
 	}
 
-	public static void validate(PizzaInfoDto pizzaInfoDTO) throws Exception {
+	@Override
+	public void validate(PizzaInfoDto pizzaInfoDTO) {
 
 		List<String> errors = new ArrayList<>();
 
@@ -28,7 +30,7 @@ public class PizzaInfoValidator {
 		}
 
 		if (errors.size() > 0) {
-			throw new Exception(String.join(", ", errors));
+			throw new ValidationException(String.join(", ", errors));
 		}
 	}
 }

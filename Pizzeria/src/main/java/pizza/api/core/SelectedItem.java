@@ -12,14 +12,50 @@ public class SelectedItem implements ISelectedItem {
 	private LocalDateTime dtUpdate;
 	private IMenuRow selectedItem;
 	private int count;
+	private Long menuRowId;
+	private Long orderId;
 
-	public SelectedItem(long id, LocalDateTime dtCreate, LocalDateTime dtUpdate, IMenuRow selectedItem, int count) {
+	public SelectedItem() {
+		super();
+	}
+
+	public SelectedItem(long id, LocalDateTime dtCreate, LocalDateTime dtUpdate, IMenuRow selectedItem, int count,
+			Long menuRowId, Long orderId) {
 		super();
 		this.id = id;
 		this.dtCreate = dtCreate;
 		this.dtUpdate = dtUpdate;
 		this.selectedItem = selectedItem;
 		this.count = count;
+		this.menuRowId = menuRowId;
+		this.orderId = orderId;
+	}
+
+	public SelectedItem(long id, LocalDateTime dtCreate, LocalDateTime dtUpdate, int count,
+			Long menuRowId, Long orderId) {
+		super();
+		this.id = id;
+		this.dtCreate = dtCreate;
+		this.dtUpdate = dtUpdate;
+		this.count = count;
+		this.menuRowId = menuRowId;
+		this.orderId = orderId;
+	}
+
+	public Long getMenuRowId() {
+		return menuRowId;
+	}
+
+	public void setMenuRowId(Long menuRowId) {
+		this.menuRowId = menuRowId;
+	}
+
+	public Long getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(Long orderId) {
+		this.orderId = orderId;
 	}
 
 	public long getId() {
@@ -79,8 +115,18 @@ public class SelectedItem implements ISelectedItem {
 		builder.append(selectedItem);
 		builder.append(", count=");
 		builder.append(count);
+		builder.append(", menuRowId=");
+		builder.append(menuRowId);
+		builder.append(", orderId=");
+		builder.append(orderId);
 		builder.append("]");
 		return builder.toString();
+	}
+
+	@Override
+	public void setId(Long id) {
+		this.id=id;
+		
 	}
 
 }

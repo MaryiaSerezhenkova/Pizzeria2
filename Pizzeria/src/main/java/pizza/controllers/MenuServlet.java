@@ -14,7 +14,8 @@ import pizza.api.IMenu;
 import pizza.api.core.JsonConverter;
 import pizza.api.dto.MenuDTO;
 import pizza.api.exceptions.ValidationException;
-import pizza.api.validators.MenuValidator;
+import pizza.api.validators.IValidator;
+import pizza.api.validators.MenuValidatorSingleton;
 import pizza.service.MenuServiceSingleton;
 import pizza.service.api.IMenuService;
 
@@ -28,7 +29,7 @@ public class MenuServlet extends HttpServlet {
 	private static final String ENCODING = "UTF-8";
 	private static final String PARAMETER_ID = "id";
 	private static final String PARAMETER_VERSION = "dtUpdate";
-	private static MenuValidator menuValidator;
+	private final IValidator<MenuDTO> menuValidator= MenuValidatorSingleton.getInstance() ;
 
     //Read POSITION
     //1) Read list

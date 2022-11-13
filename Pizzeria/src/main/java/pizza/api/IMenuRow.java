@@ -22,5 +22,16 @@ public interface IMenuRow {
 	IMenu getMenu();
 
 	void setMenu(IMenu menu);
+
 	void setId(long id);
+
+	long getPizzaInfoId();
+
+	void setPizzaInfoId(long id);
+
+	long getMenuId();
+
+	void setMenuId(long id);
+
+	long getId();
 }

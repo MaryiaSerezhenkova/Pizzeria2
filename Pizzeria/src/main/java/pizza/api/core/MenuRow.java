@@ -15,9 +15,17 @@ public class MenuRow implements IMenuRow {
 	private double price;
 	private long menuId;
 	private IMenu menu;
-
+	
 	public MenuRow() {
 		super();
+	}
+
+
+	public MenuRow(long pizzaInfoId, double price, long menuId) {
+		super();
+		this.pizzaInfoId = pizzaInfoId;
+		this.price = price;
+		this.menuId = menuId;
 	}
 
 	public MenuRow(long id, LocalDateTime dtCreate, LocalDateTime dtUpdate, long pizzaInfoId, double price,
@@ -30,6 +38,19 @@ public class MenuRow implements IMenuRow {
 		this.price = price;
 		this.menuId = menuId;
 	}
+
+	public MenuRow(long id, IPizzaInfo pizzaInfo, LocalDateTime dtCreate, LocalDateTime dtUpdate, long pizzaInfoId, double price,
+			long menuId) {
+		super();
+		this.id = id;
+		this.pizzaInfo=pizzaInfo;
+		this.dtCreate = dtCreate;
+		this.dtUpdate = dtUpdate;
+		this.pizzaInfoId = pizzaInfoId;
+		this.price = price;
+		this.menuId = menuId;
+	}
+
 
 	public long getId() {
 		return id;

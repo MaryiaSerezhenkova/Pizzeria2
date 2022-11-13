@@ -8,11 +8,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import pizza.api.IPizzaInfo;
 import pizza.api.core.JsonConverter;
 import pizza.api.dto.PizzaInfoDto;
 import pizza.api.exceptions.ValidationException;
-import pizza.api.validators.PizzaInfoValidator;
+import pizza.api.validators.IValidator;
+import pizza.api.validators.PizzaInfoValidatorSingleton;
 import pizza.service.PizzaInfoServiceSingleton;
 import pizza.service.api.IPizzaInfoService;
 
@@ -25,7 +27,7 @@ public class PizzaInfoServlet extends HttpServlet {
 	private static final String ENCODING = "UTF-8";
 	private static final String PARAMETER_ID = "id";
 	private static final String PARAMETER_VERSION = "dtUpdate";
-	private static PizzaInfoValidator pizzaInfoValidator;
+	private final IValidator<PizzaInfoDto> pizzaInfoValidator= PizzaInfoValidatorSingleton.getInstance() ;
 
 	// Read POSITION
 	// 1) Read list
@@ -94,12 +96,13 @@ public class PizzaInfoServlet extends HttpServlet {
 			if (id != null && version != null) {
 				PizzaInfoDto pizzaInfo = JsonConverter.fromJsonToPizzaInfo(jsonString);
 				try {
-					PizzaInfoValidator.validate(pizzaInfo);
+					pizzaInfoValidator.validate(pizzaInfo);
 				} catch (ValidationException e) {
 					resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 				}
 				IPizzaInfo pizzaInfoDto = pizzaInfoService.update(Long.parseLong(id),
 						JsonConverter.convert(Long.parseLong(version)), pizzaInfo);
+				System.out.println(Long.parseLong(version));
 				resp.getWriter().write(JsonConverter.fromPizzaInfoToJson(pizzaInfoDto));
 				resp.setStatus(HttpServletResponse.SC_CREATED);
 			} else {

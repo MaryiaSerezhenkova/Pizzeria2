@@ -2,16 +2,35 @@ package pizza.api;
 /**
  * Выбор покупателя
  */
-public interface ISelectedItem {
-    /**
-     * Выбранное из меню
-     * @return
-     */
-    IMenuRow getRow();
+import java.time.LocalDateTime;
 
-    /**
-     * Количество выбранного
-     * @return
-     */
-    int getCount();
+/**
+ * Выбор покупателя
+ */
+public interface ISelectedItem {
+	/**
+	 * Выбранное из меню
+	 * 
+	 * @return
+	 */
+	IMenuRow getRow();
+
+	/**
+	 * Количество выбранного
+	 * 
+	 * @return
+	 */
+	int getCount();
+
+	LocalDateTime getDtCreate();
+
+	void setDtCreate(LocalDateTime dtCreate);
+
+	LocalDateTime getDtUpdate();
+
+	void setDtUpdate(LocalDateTime dtUpdate);
+
+	long getId();
+
+	void setId(Long id);
 }
