@@ -45,35 +45,35 @@ public class MenuRowDao implements IMenuRowDao {
 				rs.getLong("menu"));
 	}
 
-	private IMenuRow menuRowMapper(ResultSet rs) throws SQLException {
-		IPizzaInfo pizzaInfo = new PizzaInfo(rs.getLong("id"), rs.getObject("dt_create", LocalDateTime.class),
-				rs.getObject("dt_update", LocalDateTime.class), rs.getString("name"), rs.getString("description"),
-				rs.getInt("size"));
-		return new MenuRow(rs.getLong("id"), pizzaInfo, rs.getObject("dt_create", LocalDateTime.class),
-				rs.getObject("dt_update", LocalDateTime.class), rs.getLong("info"), rs.getDouble("price"),
-				rs.getLong("menu"));
-	}
-
-	@Override
-	public IMenuRow create(IMenuRow item) {
-		try (Connection conn = ds.getConnection();
-				PreparedStatement stm = conn.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS)) {
-			stm.setObject(1, item.getDtCreate());
-			stm.setObject(2, item.getDtUpdate());
-			stm.setObject(3, item.getInfo());
-			stm.setDouble(4, item.getPrice());
-			stm.setObject(5, item.getMenu());
-			stm.executeUpdate();
-			ResultSet rs = stm.getGeneratedKeys();
-			if (rs.next()) {
-				item.setId(rs.getLong(1));
-			}
-			return item;
-		} catch (SQLException e) {
-			throw new RuntimeException("При сохранении данных произошла ошибка", e);
-		}
-
-	}
+//	private IMenuRow menuRowMapper(ResultSet rs) throws SQLException {
+//		IPizzaInfo pizzaInfo = new PizzaInfo(rs.getLong("id"), rs.getObject("dt_create", LocalDateTime.class),
+//				rs.getObject("dt_update", LocalDateTime.class), rs.getString("name"), rs.getString("description"),
+//				rs.getInt("size"));
+//		return new MenuRow(rs.getLong("id"), pizzaInfo, rs.getObject("dt_create", LocalDateTime.class),
+//				rs.getObject("dt_update", LocalDateTime.class), rs.getLong("info"), rs.getDouble("price"),
+//				rs.getLong("menu"));
+//	}
+//
+//	@Override
+//	public IMenuRow create(IMenuRow item) {
+//		try (Connection conn = ds.getConnection();
+//				PreparedStatement stm = conn.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS)) {
+//			stm.setObject(1, item.getDtCreate());
+//			stm.setObject(2, item.getDtUpdate());
+//			stm.setObject(3, item.getInfo());
+//			stm.setDouble(4, item.getPrice());
+//			stm.setObject(5, item.getMenu());
+//			stm.executeUpdate();
+//			ResultSet rs = stm.getGeneratedKeys();
+//			if (rs.next()) {
+//				item.setId(rs.getLong(1));
+//			}
+//			return item;
+//		} catch (SQLException e) {
+//			throw new RuntimeException("При сохранении данных произошла ошибка", e);
+//		}
+//
+//	}
 
 	@Override
 	public IMenuRow read(long id) {
@@ -96,10 +96,10 @@ public class MenuRowDao implements IMenuRowDao {
 	public IMenuRow update(long id, LocalDateTime dtUpdate, IMenuRow item) {
 		try (Connection conn = ds.getConnection();
 				PreparedStatement stm = conn.prepareStatement(UPDATE_SQL, Statement.RETURN_GENERATED_KEYS)) {
-			stm.setObject(1, item.getDtUpdate());
-			stm.setLong(2, item.getPizzaInfoId());
+		//	stm.setObject(1, item.getDtUpdate());
+			//stm.setLong(2, item.getPizzaInfoId());
 			stm.setDouble(3, item.getPrice());
-			stm.setLong(4, item.getMenuId());
+			//stm.setLong(4, item.getMenuId());
 
 			stm.setLong(5, id);
 			stm.setObject(6, dtUpdate);
@@ -158,5 +158,11 @@ public class MenuRowDao implements IMenuRowDao {
 		} catch (SQLException e) {
 			throw new RuntimeException("При сохранении данных произошла ошибка", e);
 		}
+	}
+
+	@Override
+	public IMenuRow create(IMenuRow item) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

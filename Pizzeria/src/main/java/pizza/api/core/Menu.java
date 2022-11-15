@@ -23,9 +23,9 @@ public class Menu implements IMenu {
 		this.enabled = enabled;
 	}
 
-	public void setItems(List<IMenuRow> items) {
-		this.items = items;
-	}
+//	public void setItems(List<IMenuRow> items) {
+//		this.items = items;
+//	}
 
 	public Menu() {
 	}
@@ -94,6 +94,17 @@ public class Menu implements IMenu {
 	@Override
 	public void setId(long id) {
 		this.id=id;
+		
+	}
+
+	@Override
+	public void getItems(List<IMenuRow> items) {
+		return ;		
+	}
+
+	@Override
+	public void setItems(List<IMenuRow> items) {
+		this.items = items;
 		
 	}
 

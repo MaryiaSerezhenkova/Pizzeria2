@@ -8,7 +8,7 @@ public class MenuServiceSingleton {
     private volatile static MenuServiceSingleton firstInstance = null;
 
     public MenuServiceSingleton() {
-        this.menuService = new MenuService(MenuDaoSingleton.getInstance());
+        this.menuService = new MenuService(MenuDaoSingleton.getInstance(), PizzaInfoServiceSingleton.getInstance());
     }
 
     public static IMenuService getInstance() {

@@ -5,10 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ObjectMapperFactory {
 	
-    private static final ObjectMapper mapper  = new ObjectMapper();
-    
+		private static final ThreadLocal<ObjectMapper> mapper = ThreadLocal.withInitial(() -> {
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.findAndRegisterModules();
+			mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+			return mapper;
+		});
 
-//    public static ObjectMapper getObjectMapper() {
-//        return mapper.get();
-//    }
-}
+		public static ObjectMapper getObjectMapper() {
+			return mapper.get();
+		}
+	}

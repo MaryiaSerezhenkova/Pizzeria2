@@ -9,8 +9,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import pizza.api.IPizzaInfo;
 import pizza.api.core.JsonConverter;
+import pizza.api.core.ObjectMapperFactory;
 import pizza.api.dto.PizzaInfoDto;
 import pizza.api.exceptions.ValidationException;
 import pizza.api.validators.IValidator;
@@ -28,6 +32,7 @@ public class PizzaInfoServlet extends HttpServlet {
 	private static final String PARAMETER_ID = "id";
 	private static final String PARAMETER_VERSION = "dtUpdate";
 	private final IValidator<PizzaInfoDto> pizzaInfoValidator= PizzaInfoValidatorSingleton.getInstance() ;
+	private final ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
 
 	// Read POSITION
 	// 1) Read list
@@ -41,19 +46,19 @@ public class PizzaInfoServlet extends HttpServlet {
 
 			if (id != null) {
 				if (Long.valueOf(id) > 0) {
-					resp.getWriter().write(JsonConverter.fromPizzaInfoToJson(pizzaInfoService.read(Long.valueOf(id))));
+					resp.getWriter().write(mapper.writeValueAsString(pizzaInfoService.read(Long.valueOf(id))));
 					resp.setStatus(HttpServletResponse.SC_OK);
 				} else {
 					resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
 				}
 			} else {
-				resp.getWriter().write(JsonConverter.fromPizzaInfoListToJson(pizzaInfoService.get()));
+				resp.getWriter()
+						.write(mapper.registerModule(new JavaTimeModule()).writeValueAsString(pizzaInfoService.get()));
 				resp.setStatus(HttpServletResponse.SC_OK);
 			}
 		} catch (Exception e) {
 			resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
-
 	}
 
 	// CREATE POSITION
@@ -64,14 +69,14 @@ public class PizzaInfoServlet extends HttpServlet {
 			resp.setCharacterEncoding(ENCODING);
 			resp.setContentType(CONTENT_TYPE);
 			String jsonString = req.getReader().lines().collect(Collectors.joining());
-			PizzaInfoDto pizzaInfo = JsonConverter.fromJsonToPizzaInfo(jsonString);
+			PizzaInfoDto pizzaInfo = mapper.readValue(jsonString, PizzaInfoDto.class);
 			try {
 				pizzaInfoValidator.validate(pizzaInfo);
 			} catch (ValidationException e) {
 				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			}
 			IPizzaInfo pizzaInfoDto = pizzaInfoService.create(pizzaInfo);
-			resp.getWriter().write(JsonConverter.fromPizzaInfoToJson(pizzaInfoDto));
+			resp.getWriter().write(mapper.writeValueAsString(pizzaInfoDto));
 			resp.setStatus(HttpServletResponse.SC_CREATED);
 
 		} catch (Exception e) {
@@ -92,9 +97,9 @@ public class PizzaInfoServlet extends HttpServlet {
 			String id = req.getParameter(PARAMETER_ID);
 			String version = req.getParameter(PARAMETER_VERSION);
 			String jsonString = req.getReader().lines().collect(Collectors.joining());
-			
+			 
 			if (id != null && version != null) {
-				PizzaInfoDto pizzaInfo = JsonConverter.fromJsonToPizzaInfo(jsonString);
+				PizzaInfoDto pizzaInfo = mapper.readValue(jsonString, PizzaInfoDto.class);
 				try {
 					pizzaInfoValidator.validate(pizzaInfo);
 				} catch (ValidationException e) {
@@ -102,8 +107,7 @@ public class PizzaInfoServlet extends HttpServlet {
 				}
 				IPizzaInfo pizzaInfoDto = pizzaInfoService.update(Long.parseLong(id),
 						JsonConverter.convert(Long.parseLong(version)), pizzaInfo);
-				System.out.println(Long.parseLong(version));
-				resp.getWriter().write(JsonConverter.fromPizzaInfoToJson(pizzaInfoDto));
+				resp.getWriter().write(mapper.registerModule(new JavaTimeModule()).writeValueAsString(pizzaInfoDto));
 				resp.setStatus(HttpServletResponse.SC_CREATED);
 			} else {
 				resp.setStatus(HttpServletResponse.SC_NO_CONTENT);

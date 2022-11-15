@@ -6,8 +6,7 @@ public class MenuDTO {
 
 	private String name;
 	private boolean enabled;
-
-	private List<MenuRowDTO> items;
+	private List<Row> items;
 
 	public MenuDTO() {
 		super();
@@ -27,13 +26,12 @@ public class MenuDTO {
 		return enabled;
 	}
 
-	public List<MenuRowDTO> getItems() {
+	public List<Row> getItems() {
 		return items;
 	}
 
-	@Override
-	public String toString() {
-		return "Menu{" + "name='" + name + '\'' + ", enabled=" + enabled + '}';
+	public void setItems(List<Row> items) {
+		this.items = items;
 	}
 
 	public void setName(String name) {
@@ -44,4 +42,24 @@ public class MenuDTO {
 		this.enabled = enabled;
 	}
 
+	public static class Row {
+		private long pizzaInfo;
+		private double price;
+
+		public long getPizzaInfo() {
+			return pizzaInfo;
+		}
+
+		public void setPizzaInfo(long pizzaInfo) {
+			this.pizzaInfo = pizzaInfo;
+		}
+
+		public double getPrice() {
+			return price;
+		}
+
+		public void setPrice(double price) {
+			this.price = price;
+		}
+	}
 }

@@ -5,12 +5,12 @@ import pizza.api.core.MenuRow;
 import pizza.api.dto.MenuRowDTO;
 
 public class MenuRowMapper {
-	public static IMenuRow menuRowInputMapping(MenuRowDTO menuRowDTO) {
-		return new MenuRow(menuRowDTO.getPizzaInfoId(), menuRowDTO.getPrice(), menuRowDTO.getMenuId());
-	}
-
-	public static MenuRow menuRowOutputMapping(IMenuRow menuRow) {
-		return new MenuRow(menuRow.getId(), menuRow.getDtCreate(), menuRow.getDtUpdate(), menuRow.getPizzaInfoId(),
-				menuRow.getPrice(), menuRow.getMenuId());
-	}
+//	public static IMenuRow menuRowInputMapping(MenuRowDTO menuRowDTO) {
+//		return new MenuRow(menuRowDTO.getPizzaInfoId(), menuRowDTO.getPrice(), menuRowDTO.getMenuId());
+//	}
+//
+//	public static MenuRow menuRowOutputMapping(IMenuRow menuRow) {
+//		return new MenuRow(menuRow.getId(), menuRow.getDtCreate(), menuRow.getDtUpdate(), menuRow.getPizzaInfoId(),
+//				menuRow.getPrice(), menuRow.getMenuId());
+//	}
 }

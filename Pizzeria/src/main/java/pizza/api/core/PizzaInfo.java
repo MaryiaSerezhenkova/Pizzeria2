@@ -2,6 +2,9 @@ package pizza.api.core;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import pizza.api.IPizzaInfo;
 
 public class PizzaInfo implements IPizzaInfo {
@@ -37,7 +40,9 @@ public class PizzaInfo implements IPizzaInfo {
 	public void setId(Long id) {
 		this.id = id;
 	}
-
+	@Override
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@JsonDeserialize(using = CustomLocalDateTimeDesSerializer.class)
 	public LocalDateTime getDtCreate() {
 		return dtCreate;
 	}
@@ -45,7 +50,9 @@ public class PizzaInfo implements IPizzaInfo {
 	public void setDtCreate(LocalDateTime dtCreate) {
 		this.dtCreate = dtCreate;
 	}
-
+	@Override
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@JsonDeserialize(using = CustomLocalDateTimeDesSerializer.class)
 	public LocalDateTime getDtUpdate() {
 		return dtUpdate;
 	}

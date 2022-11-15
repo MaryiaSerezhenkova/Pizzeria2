@@ -1,21 +1,35 @@
 package pizza.dao;
 
-import javax.sql.DataSource;
-import pizza.api.IMenu;
-import pizza.api.core.Menu;
-import pizza.api.dto.MenuDTO;
-import pizza.dao.api.IMenuDao;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.sql.DataSource;
+
+import pizza.api.IMenu;
+import pizza.api.IMenuRow;
+import pizza.api.core.Menu;
+import pizza.dao.api.IMenuDao;
 
 public class MenuDao implements IMenuDao {
 	private static final String INSERT_SQL = "INSERT INTO app.menu(\n" + "\tdt_create, dt_update, name, enable)\n"
 			+ "\tVALUES (?, ?, ?, ?);";
 
+	private static final String INSERT_ROWS_SQL = "INSERT INTO app.menu_rows(pizza, price, menu)\n"
+			+ "	VALUES (?, ?, ?);";
 	private static final String SELECT_BY_ID_SQL = "SELECT id, dt_create, dt_update, name, enable\n"
 			+ "\tFROM app.menu\n" + "\tWHERE id = ?;";
+	private static final String SELECT_ROWS_BY_MENU_ID_SQL = "SELECT\n" + "    row.price AS row_price,\n"
+			+ "    info.id AS info_id,\n" + "    info.dt_create AS info_dt_create,\n"
+			+ "    info.dt_update AS info_dt_update,\n" + "    info.name AS info_name,\n"
+			+ "    info.description AS info_description,\n" + "    info.size AS info_size\n" + "FROM\n"
+			+ "    app.menu_rows AS row\n" + "    JOIN app.pizza_info AS info ON row.pizza = info.id\n" + "WHERE\n"
+			+ "    menu = ?;\n";
 
 	private static final String SELECT_SQL = "SELECT id, dt_create, dt_update, name, enable\n" + "\tFROM app.menu;";
 
@@ -33,7 +47,7 @@ public class MenuDao implements IMenuDao {
 	@Override
 	public List<IMenu> get() {
 		List<IMenu> data = new ArrayList<>();
-		try (Connection conn = ds.getConnection(); PreparedStatement stm = conn.prepareStatement(SELECT_SQL)) {
+		try (Connection conn = ds.getConnection(); PreparedStatement stm = conn.prepareStatement(SELECT_SQL);) {
 			try (ResultSet rs = stm.executeQuery()) {
 				while (rs.next()) {
 					data.add(mapper(rs));
@@ -74,35 +88,59 @@ public class MenuDao implements IMenuDao {
 
 	public IMenu create(IMenu item) {
 		try (Connection conn = ds.getConnection();
-				PreparedStatement stm = conn.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS)) {
+				PreparedStatement stm = conn.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
+				PreparedStatement stmRows = conn.prepareStatement(INSERT_ROWS_SQL);) {
 			stm.setObject(1, item.getDtCreate());
 			stm.setObject(2, item.getDtUpdate());
 			stm.setString(3, item.getName());
 			stm.setBoolean(4, item.isEnabled());
 			stm.executeUpdate();
-			ResultSet rs = stm.getGeneratedKeys();
-			if (rs.next()) {
-				item.setId(rs.getLong(1));
+			try (ResultSet rs = stm.getGeneratedKeys();) {
+
+				while (rs.next()) {
+					long menuId = rs.getLong(1);
+					for (IMenuRow row : item.getItems()) {
+						stmRows.setLong(1, row.getInfo().getId());
+						stmRows.setDouble(2, row.getPrice());
+						// stmRows.setDouble(3, menuId);
+
+						stmRows.addBatch();
+					}
+
+					stmRows.executeBatch();
+
+					return read(menuId);
+				}
+
+				return null;
 			}
-			return item;
 		} catch (SQLException e) {
 			throw new RuntimeException("При сохранении данных произошла ошибка", e);
 		}
 	}
 
 	public IMenu read(long id) {
-		try (Connection conn = ds.getConnection(); PreparedStatement stm = conn.prepareStatement(SELECT_BY_ID_SQL)) {
+		try (Connection conn = ds.getConnection();
+				PreparedStatement stm = conn.prepareStatement(SELECT_BY_ID_SQL);
+				PreparedStatement stmRows = conn.prepareStatement(SELECT_ROWS_BY_MENU_ID_SQL)) {
 			stm.setObject(1, id);
-
+			// stm.setLong(1, id);
 			try (ResultSet rs = stm.executeQuery()) {
 				while (rs.next()) {
-					return mapper(rs);
+					stmRows.setLong(1, id);
+					try (ResultSet rsRows = stmRows.executeQuery()) {
+						return mapper(rs, rsRows);
+					}
 				}
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException("При сохранении данных произошла ошибка", e);
 		}
+		return null;
+	}
 
+	private IMenu mapper(ResultSet rs, ResultSet rsRows) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
