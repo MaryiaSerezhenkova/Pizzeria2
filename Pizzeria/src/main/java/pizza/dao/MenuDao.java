@@ -14,6 +14,8 @@ import javax.sql.DataSource;
 import pizza.api.IMenu;
 import pizza.api.IMenuRow;
 import pizza.api.core.Menu;
+import pizza.api.core.MenuRow;
+import pizza.api.core.PizzaInfo;
 import pizza.dao.api.IMenuDao;
 
 public class MenuDao implements IMenuDao {
@@ -47,15 +49,15 @@ public class MenuDao implements IMenuDao {
 	@Override
 	public List<IMenu> get() {
 		List<IMenu> data = new ArrayList<>();
-		try (Connection conn = ds.getConnection(); PreparedStatement stm = conn.prepareStatement(SELECT_SQL);) {
-			try (ResultSet rs = stm.executeQuery()) {
-				while (rs.next()) {
-					data.add(mapper(rs));
-				}
-			}
-		} catch (SQLException e) {
-			throw new RuntimeException("При сохранении данных произошла ошибка", e);
-		}
+//		try (Connection conn = ds.getConnection(); PreparedStatement stm = conn.prepareStatement(SELECT_SQL);) {
+//			try (ResultSet rs = stm.executeQuery()) {
+//				while (rs.next()) {
+//					data.add(mapper(rs));
+//				}
+//			}
+//		} catch (SQLException e) {
+//			throw new RuntimeException("При сохранении данных произошла ошибка", e);
+//		}
 
 		return data;
 	}
@@ -81,10 +83,10 @@ public class MenuDao implements IMenuDao {
 		}
 	}
 
-	public IMenu mapper(ResultSet rs) throws SQLException {
-		return new Menu(rs.getLong("id"), rs.getObject("dt_create", LocalDateTime.class),
-				rs.getObject("dt_update", LocalDateTime.class), rs.getString("name"), rs.getBoolean("enable"));
-	}
+//	public IMenu mapper(ResultSet rs) throws SQLException {
+//		return new Menu(rs.getLong("id"), rs.getObject("dt_create", LocalDateTime.class),
+//				rs.getObject("dt_update", LocalDateTime.class), rs.getString("name"), rs.getBoolean("enable"));
+//	}
 
 	public IMenu create(IMenu item) {
 		try (Connection conn = ds.getConnection();
@@ -102,7 +104,7 @@ public class MenuDao implements IMenuDao {
 					for (IMenuRow row : item.getItems()) {
 						stmRows.setLong(1, row.getInfo().getId());
 						stmRows.setDouble(2, row.getPrice());
-						// stmRows.setDouble(3, menuId);
+						 stmRows.setDouble(3, menuId);
 
 						stmRows.addBatch();
 					}
@@ -123,8 +125,8 @@ public class MenuDao implements IMenuDao {
 		try (Connection conn = ds.getConnection();
 				PreparedStatement stm = conn.prepareStatement(SELECT_BY_ID_SQL);
 				PreparedStatement stmRows = conn.prepareStatement(SELECT_ROWS_BY_MENU_ID_SQL)) {
-			stm.setObject(1, id);
-			// stm.setLong(1, id);
+		//	stm.setObject(1, id);
+			 stm.setLong(1, id);
 			try (ResultSet rs = stm.executeQuery()) {
 				while (rs.next()) {
 					stmRows.setLong(1, id);
@@ -139,10 +141,6 @@ public class MenuDao implements IMenuDao {
 		return null;
 	}
 
-	private IMenu mapper(ResultSet rs, ResultSet rsRows) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	public IMenu update(long id, LocalDateTime dtUpdate, IMenu item) {
 		try (Connection conn = ds.getConnection();
@@ -169,5 +167,36 @@ public class MenuDao implements IMenuDao {
 			throw new RuntimeException("При сохранении данных произошла ошибка", e);
 		}
 	}
+	 public IMenu mapper(ResultSet rs, ResultSet rsRows) throws SQLException {
+	        IMenu menu = new Menu(
+	                rs.getLong(1),
+	                rs.getObject(2, LocalDateTime.class),
+	                rs.getObject(3, LocalDateTime.class),
+	                rs.getString(4),
+	                rs.getBoolean(5)
+	        );
 
+	        List<IMenuRow> rows = new ArrayList<>();
+	        while(rsRows.next()){
+	            MenuRow row = new MenuRow();
+
+	            rows.add(row);
+
+	            PizzaInfo info = new PizzaInfo();
+
+	            row.setPrice(rsRows.getDouble("row_price"));
+	            row.setPizzaInfo(info);
+
+	            info.setId(rsRows.getLong("info_id"));
+	            info.setDtCreate(rsRows.getObject("info_dt_create", LocalDateTime.class));
+	            info.setDtUpdate(rsRows.getObject("info_dt_update", LocalDateTime.class));
+	            info.setName(rsRows.getString("info_name"));
+	            info.setDescription(rsRows.getString("info_description"));
+	            info.setSize(rsRows.getInt("info_size"));
+	        }
+
+	        menu.setItems(rows);
+
+	        return menu;
+	    }
 }

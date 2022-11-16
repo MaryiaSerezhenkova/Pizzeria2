@@ -6,7 +6,7 @@ import pizza.api.dto.MenuDTO;
 
 public class MenuMapper {
     public static IMenu menuInputMapping(MenuDTO menu) {
-        return new Menu(menu.getName(), menu.isEnabled());
+        return new Menu(menu.getName(), menu.isEnabled(), menu.getItems());
     }
 
     public static Menu menuOutputMapping(IMenu menu) {

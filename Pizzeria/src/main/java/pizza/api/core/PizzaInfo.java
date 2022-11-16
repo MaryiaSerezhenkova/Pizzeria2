@@ -33,6 +33,8 @@ public class PizzaInfo implements IPizzaInfo {
 		this.size = size;
 	}
 
+	public PizzaInfo() {
+	}
 	public long getId() {
 		return id;
 	}

@@ -18,6 +18,13 @@ public class MenuDTO {
 		this.enabled = enabled;
 	}
 
+	public MenuDTO(String name, boolean enabled, List<Row> items) {
+		super();
+		this.name = name;
+		this.enabled = enabled;
+		this.items = items;
+	}
+
 	public String getName() {
 		return name;
 	}

@@ -3,8 +3,12 @@ package pizza.api.core;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import pizza.api.IMenu;
 import pizza.api.IMenuRow;
+import pizza.api.dto.MenuDTO.Row;
 
 public class Menu implements IMenu {
 	private long id;
@@ -45,14 +49,25 @@ public class Menu implements IMenu {
 		this.enabled = enable;
 	}
 
+
+	public Menu(String name, boolean enable, List<Row> items2) {
+		this.name = name;
+		this.enabled = enable;
+		
+	}
+
 	public long getId() {
 		return id;
 	}
-
+	@Override
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@JsonDeserialize(using = CustomLocalDateTimeDesSerializer.class)
 	public LocalDateTime getDtCreate() {
 		return dtCreate;
 	}
-
+	@Override
+	@JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+	@JsonDeserialize(using = CustomLocalDateTimeDesSerializer.class)
 	public LocalDateTime getDtUpdate() {
 		return dtUpdate;
 	}
