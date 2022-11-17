@@ -56,6 +56,16 @@ public class Menu implements IMenu {
 		
 	}
 
+	public Menu(long id, LocalDateTime dtCreate, LocalDateTime dtUpdate, String name, boolean enabled,
+			List<IMenuRow> items) {
+		this.id = id;
+		this.dtCreate = dtCreate;
+		this.dtUpdate = dtUpdate;
+		this.name = name;
+		this.enabled = enabled;
+		this.items=items;
+	}
+
 	public long getId() {
 		return id;
 	}

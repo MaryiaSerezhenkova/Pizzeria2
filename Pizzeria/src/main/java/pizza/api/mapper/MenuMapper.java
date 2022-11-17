@@ -10,7 +10,7 @@ public class MenuMapper {
     }
 
     public static Menu menuOutputMapping(IMenu menu) {
-        return new Menu(menu.getId(), menu.getDtCreate(), menu.getDtUpdate(), menu.getName(), menu.isEnabled());
+        return new Menu(menu.getId(), menu.getDtCreate(), menu.getDtUpdate(), menu.getName(), menu.isEnabled(), menu.getItems());
     }
 
 }
