@@ -1,24 +1,28 @@
 package pizza.api.dto;
 
-import pizza.api.IMenuRow;
 
 public class SelectedItemDTO {
 
-	private IMenuRow selectedItem;
+	private long orderId;
 	private int count;
 
-	public SelectedItemDTO(IMenuRow selectedItem, int count) {
+	public SelectedItemDTO() {
 		super();
-		this.selectedItem = selectedItem;
+
+	}
+
+	public SelectedItemDTO(long orderId, int count) {
+		super();
+		this.orderId = orderId;
 		this.count = count;
 	}
 
-	public IMenuRow getSelectedItem() {
-		return selectedItem;
+	public long getOrderId() {
+		return orderId;
 	}
 
-	public void setSelectedItem(IMenuRow selectedItem) {
-		this.selectedItem = selectedItem;
+	public void setOrderId(long orderId) {
+		this.orderId = orderId;
 	}
 
 	public int getCount() {
@@ -32,8 +36,8 @@ public class SelectedItemDTO {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("SelectedItemDTO [selectedItem=");
-		builder.append(selectedItem);
+		builder.append("SelectedItemDTO [orderId=");
+		builder.append(orderId);
 		builder.append(", count=");
 		builder.append(count);
 		builder.append("]");

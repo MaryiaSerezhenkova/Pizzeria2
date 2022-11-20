@@ -21,5 +21,6 @@ public class CustomLocalDateTimeSerializer extends StdSerializer<LocalDateTime> 
     @Override
     public void serialize(LocalDateTime value, JsonGenerator gen, SerializerProvider sp) throws IOException {
         gen.writeString(Long.toString(value.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
+     //   gen.writeNumber(value.toInstant(Z));
     }
 }

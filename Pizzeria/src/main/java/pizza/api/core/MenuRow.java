@@ -6,16 +6,10 @@ import pizza.api.IMenuRow;
 import pizza.api.IPizzaInfo;
 
 public class MenuRow implements IMenuRow {
-//	private long id;
-//	private LocalDateTime dtCreate;
-//	private LocalDateTime dtUpdate;
+	
 	private IPizzaInfo pizzaInfo;
-	// private long pizzaInfoId;
 	private double price;
 
-//	private long menuId;
-//	private IMenu menu;
-//	
 	public MenuRow() {
 		super();
 	}

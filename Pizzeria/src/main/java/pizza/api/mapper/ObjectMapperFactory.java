@@ -1,4 +1,4 @@
-package pizza.api.core;
+package pizza.api.mapper;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;

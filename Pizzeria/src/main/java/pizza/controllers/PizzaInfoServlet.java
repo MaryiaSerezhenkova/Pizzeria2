@@ -14,9 +14,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import pizza.api.IPizzaInfo;
 import pizza.api.core.JsonConverter;
-import pizza.api.core.ObjectMapperFactory;
 import pizza.api.dto.PizzaInfoDto;
 import pizza.api.exceptions.ValidationException;
+import pizza.api.mapper.ObjectMapperFactory;
 import pizza.api.validators.IValidator;
 import pizza.api.validators.PizzaInfoValidatorSingleton;
 import pizza.service.PizzaInfoServiceSingleton;
@@ -30,7 +30,7 @@ public class PizzaInfoServlet extends HttpServlet {
 	private static final String CONTENT_TYPE = "application/json";
 	private static final String ENCODING = "UTF-8";
 	private static final String PARAMETER_ID = "id";
-	private static final String PARAMETER_VERSION = "dtUpdate";
+	private static final String PARAMETER_VERSION = "dt_update";
 	private final IValidator<PizzaInfoDto> pizzaInfoValidator= PizzaInfoValidatorSingleton.getInstance() ;
 	private final ObjectMapper mapper = ObjectMapperFactory.getObjectMapper();
 

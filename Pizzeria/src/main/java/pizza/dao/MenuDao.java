@@ -22,8 +22,6 @@ public class MenuDao implements IMenuDao {
 	private static final String INSERT_SQL = "INSERT INTO app.menu(\n" + "\tdt_create, dt_update, name, enable)\n"
 			+ "\tVALUES (?, ?, ?, ?);";
 
-	private static final String INSERT_ROWS_SQL = "INSERT INTO app.menu_rows(pizza, price, menu)\n"
-			+ "	VALUES (?, ?, ?);";
 	private static final String SELECT_BY_ID_SQL = "SELECT id, dt_create, dt_update, name, enable\n"
 			+ "\tFROM app.menu\n" + "\tWHERE id = ?;";
 	private static final String SELECT_ROWS_BY_MENU_ID_SQL = "SELECT\n" + "    row.price AS row_price,\n"
@@ -40,6 +38,10 @@ public class MenuDao implements IMenuDao {
 
 	private static final String DELETE_SQL = "DELETE FROM app.menu\n" + "\tWHERE id = ? and dt_update = ?;";
 
+	private static final String INSERT_ROWS_SQL = "INSERT INTO app.menu_rows(\n" + "\tpizza, price, menu)\n"
+			+ "\tVALUES (?, ?, ?);";
+
+	private static final String DELETE_ROWS_SQL = "DELETE FROM app.menu_rows WHERE menu = ?;";
 	private final DataSource ds;
 
 	public MenuDao(DataSource ds) {
@@ -49,38 +51,23 @@ public class MenuDao implements IMenuDao {
 	@Override
 	public List<IMenu> get() {
 		List<IMenu> data = new ArrayList<>();
-//		try (Connection conn = ds.getConnection(); PreparedStatement stm = conn.prepareStatement(SELECT_SQL);) {
-//			try (ResultSet rs = stm.executeQuery()) {
-//				while (rs.next()) {
-//					data.add(mapper(rs));
-//				}
-//			}
-//		} catch (SQLException e) {
-//			throw new RuntimeException("При сохранении данных произошла ошибка", e);
-//		}
-
-		return data;
-	}
-
-	@Override
-	public void delete(long id, LocalDateTime dtUpdate) {
 		try (Connection conn = ds.getConnection();
-				PreparedStatement stm = conn.prepareStatement(DELETE_SQL, Statement.RETURN_GENERATED_KEYS)) {
-			stm.setLong(1, id);
-			stm.setObject(2, dtUpdate);
-
-			int countUpdatedRows = stm.executeUpdate();
-
-			if (countUpdatedRows != 1) {
-				if (countUpdatedRows == 0) {
-					throw new IllegalArgumentException("Не смогли удалить какую либо запись");
-				} else {
-					throw new IllegalArgumentException("Удалили более одной записи");
+				PreparedStatement stm = conn.prepareStatement(SELECT_SQL);
+				PreparedStatement stmRows = conn.prepareStatement(SELECT_ROWS_BY_MENU_ID_SQL);) {
+			try (ResultSet rs = stm.executeQuery()) {
+				while (rs.next()) {
+					long id = rs.getLong(1);
+					stmRows.setLong(1, id);
+					try (ResultSet rsRows = stmRows.executeQuery()) {
+						data.add(mapper(rs, rsRows));
+					}
 				}
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException("При сохранении данных произошла ошибка", e);
 		}
+
+		return data;
 	}
 
 //	public IMenu mapper(ResultSet rs) throws SQLException {
@@ -104,7 +91,7 @@ public class MenuDao implements IMenuDao {
 					for (IMenuRow row : item.getItems()) {
 						stmRows.setLong(1, row.getInfo().getId());
 						stmRows.setDouble(2, row.getPrice());
-						 stmRows.setDouble(3, menuId);
+						stmRows.setDouble(3, menuId);
 
 						stmRows.addBatch();
 					}
@@ -125,8 +112,8 @@ public class MenuDao implements IMenuDao {
 		try (Connection conn = ds.getConnection();
 				PreparedStatement stm = conn.prepareStatement(SELECT_BY_ID_SQL);
 				PreparedStatement stmRows = conn.prepareStatement(SELECT_ROWS_BY_MENU_ID_SQL)) {
-		//	stm.setObject(1, id);
-			 stm.setLong(1, id);
+			// stm.setObject(1, id);
+			stm.setLong(1, id);
 			try (ResultSet rs = stm.executeQuery()) {
 				while (rs.next()) {
 					stmRows.setLong(1, id);
@@ -141,10 +128,12 @@ public class MenuDao implements IMenuDao {
 		return null;
 	}
 
-
 	public IMenu update(long id, LocalDateTime dtUpdate, IMenu item) {
 		try (Connection conn = ds.getConnection();
-				PreparedStatement stm = conn.prepareStatement(UPDATE_SQL, Statement.RETURN_GENERATED_KEYS)) {
+				PreparedStatement stm = conn.prepareStatement(UPDATE_SQL);
+				PreparedStatement stmRowsDel = conn.prepareStatement(DELETE_ROWS_SQL);
+				PreparedStatement stmRowsIns = conn.prepareStatement(INSERT_ROWS_SQL);) {
+			conn.setAutoCommit(false);
 			stm.setObject(1, item.getDtUpdate());
 			stm.setString(2, item.getName());
 			stm.setBoolean(3, item.isEnabled());
@@ -162,41 +151,73 @@ public class MenuDao implements IMenuDao {
 				}
 			}
 
+			stmRowsDel.setLong(1, item.getId());
+
+			stmRowsDel.executeUpdate();
+
+			for (IMenuRow row : item.getItems()) {
+				stmRowsIns.setLong(1, row.getInfo().getId());
+				stmRowsIns.setDouble(2, row.getPrice());
+				stmRowsIns.setDouble(3, item.getId());
+
+				stmRowsIns.addBatch();
+			}
+
+			stmRowsIns.executeBatch();
+			conn.commit();
 			return read(id);
 		} catch (SQLException e) {
 			throw new RuntimeException("При сохранении данных произошла ошибка", e);
 		}
 	}
-	 public IMenu mapper(ResultSet rs, ResultSet rsRows) throws SQLException {
-	        IMenu menu = new Menu(
-	                rs.getLong(1),
-	                rs.getObject(2, LocalDateTime.class),
-	                rs.getObject(3, LocalDateTime.class),
-	                rs.getString(4),
-	                rs.getBoolean(5)
-	        );
 
-	        List<IMenuRow> rows = new ArrayList<>();
-	        while(rsRows.next()){
-	            MenuRow row = new MenuRow();
+	@Override
+	public void delete(long id, LocalDateTime dtUpdate) {
+		 try (Connection conn = ds.getConnection();
+	             PreparedStatement stm = conn.prepareStatement(DELETE_SQL, Statement.RETURN_GENERATED_KEYS)
+	        ){
+	            stm.setLong(1, id);
+	            stm.setObject(2, dtUpdate);
 
-	            rows.add(row);
+	            int countUpdatedRows = stm.executeUpdate();
 
-	            PizzaInfo info = new PizzaInfo();
-
-	            row.setPrice(rsRows.getDouble("row_price"));
-	            row.setPizzaInfo(info);
-
-	            info.setId(rsRows.getLong("info_id"));
-	            info.setDtCreate(rsRows.getObject("info_dt_create", LocalDateTime.class));
-	            info.setDtUpdate(rsRows.getObject("info_dt_update", LocalDateTime.class));
-	            info.setName(rsRows.getString("info_name"));
-	            info.setDescription(rsRows.getString("info_description"));
-	            info.setSize(rsRows.getInt("info_size"));
+	            if(countUpdatedRows != 1){
+	                if(countUpdatedRows == 0){
+	                    throw new IllegalArgumentException("Не смогли удалить какую либо запись");
+	                } else {
+	                    throw new IllegalArgumentException("Удалили более одной записи");
+	                }
+	            }
+	        } catch (SQLException e){
+	            throw new RuntimeException("При сохранении данных произошла ошибка", e);
 	        }
-
-	        menu.setItems(rows);
-
-	        return menu;
 	    }
+
+	public IMenu mapper(ResultSet rs, ResultSet rsRows) throws SQLException {
+		IMenu menu = new Menu(rs.getLong(1), rs.getObject(2, LocalDateTime.class), rs.getObject(3, LocalDateTime.class),
+				rs.getString(4), rs.getBoolean(5));
+
+		List<IMenuRow> rows = new ArrayList<>();
+		while (rsRows.next()) {
+			MenuRow row = new MenuRow();
+
+			rows.add(row);
+
+			PizzaInfo info = new PizzaInfo();
+
+			row.setPrice(rsRows.getDouble("row_price"));
+			row.setPizzaInfo(info);
+
+			info.setId(rsRows.getLong("info_id"));
+			info.setDtCreate(rsRows.getObject("info_dt_create", LocalDateTime.class));
+			info.setDtUpdate(rsRows.getObject("info_dt_update", LocalDateTime.class));
+			info.setName(rsRows.getString("info_name"));
+			info.setDescription(rsRows.getString("info_description"));
+			info.setSize(rsRows.getInt("info_size"));
+		}
+
+		menu.setItems(rows);
+
+		return menu;
+	}
 }

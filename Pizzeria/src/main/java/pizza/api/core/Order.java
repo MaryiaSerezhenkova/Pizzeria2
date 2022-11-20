@@ -13,6 +13,11 @@ public class Order implements IOrder {
 	private LocalDateTime dtUpdate;
 	private List<ISelectedItem> selectedItems;
 
+	public Order() {
+		super();
+
+	}
+
 	public Order(long id, LocalDateTime dtCreate, LocalDateTime dtUpdate, List<ISelectedItem> selectedItems) {
 		super();
 		this.id = id;

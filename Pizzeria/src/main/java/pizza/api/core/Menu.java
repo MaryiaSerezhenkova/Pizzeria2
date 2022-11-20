@@ -27,10 +27,6 @@ public class Menu implements IMenu {
 		this.enabled = enabled;
 	}
 
-//	public void setItems(List<IMenuRow> items) {
-//		this.items = items;
-//	}
-
 	public Menu() {
 	}
 
