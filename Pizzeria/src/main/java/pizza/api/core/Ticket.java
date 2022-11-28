@@ -9,19 +9,20 @@ public class Ticket implements ITicket {
 
 	private long id;
 	private LocalDateTime dtCreate;
-	private LocalDateTime dtUpdate;
+	private int number;
 	private IOrder order;
 
+	public Ticket() {
+		super();
+	}
 
-
-	public Ticket(long id, LocalDateTime dtCreate, LocalDateTime dtUpdate, IOrder order) {
+	public Ticket(long id, LocalDateTime dtCreate, int number, IOrder order) {
 		super();
 		this.id = id;
 		this.dtCreate = dtCreate;
-		this.dtUpdate = dtUpdate;
+		this.number = number;
 		this.order = order;
 	}
-
 
 	public long getId() {
 		return id;
@@ -39,12 +40,8 @@ public class Ticket implements ITicket {
 		this.dtCreate = dtCreate;
 	}
 
-	public LocalDateTime getDtUpdate() {
-		return dtUpdate;
-	}
-
-	public void setDtUpdate(LocalDateTime dtUpdate) {
-		this.dtUpdate = dtUpdate;
+	public void setNumber(int number) {
+		this.number = number;
 	}
 
 	public void setOrder(IOrder order) {
@@ -65,7 +62,6 @@ public class Ticket implements ITicket {
 		return dtCreate;
 	}
 
-
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -73,8 +69,8 @@ public class Ticket implements ITicket {
 		builder.append(id);
 		builder.append(", dtCreate=");
 		builder.append(dtCreate);
-		builder.append(", dtUpdate=");
-		builder.append(dtUpdate);
+		builder.append(", number=");
+		builder.append(number);
 		builder.append(", order=");
 		builder.append(order);
 		builder.append("]");

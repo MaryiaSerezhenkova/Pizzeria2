@@ -51,13 +51,7 @@ public class MenuService implements IMenuService {
 
 	@Override
 	public IMenu create(MenuDTO item) {
-//		
-//		IMenu menu = MenuMapper.menuInputMapping(dto);
-//		menu.setDtCreate(LocalDateTime.now());
-//		menu.setDtUpdate(menu.getDtCreate());
-//		return MenuMapper.menuOutputMapping(this.menuDao.create(menu));
 		IMenu menu = new Menu();
-
         menu.setDtCreate(LocalDateTime.now());
         menu.setDtUpdate(menu.getDtCreate());
         menu.setName(item.getName());

@@ -26,6 +26,13 @@ public class Order implements IOrder {
 		this.selectedItems = selectedItems;
 	}
 
+	public Order(long id, LocalDateTime dtCreate, LocalDateTime dtUpdate) {
+		super();
+		this.id = id;
+		this.dtCreate = dtCreate;
+		this.dtUpdate = dtUpdate;
+	}
+
 	public long getId() {
 		return id;
 	}
@@ -50,14 +57,6 @@ public class Order implements IOrder {
 		this.dtUpdate = dtUpdate;
 	}
 
-	public List<ISelectedItem> getSelectedItems() {
-		return selectedItems;
-	}
-
-	public void setSelectedItems(List<ISelectedItem> selectedItems) {
-		this.selectedItems = selectedItems;
-	}
-
 	@Override
 	public List<ISelectedItem> getSelected() {
 		return selectedItems;
@@ -76,6 +75,12 @@ public class Order implements IOrder {
 		builder.append(selectedItems);
 		builder.append("]");
 		return builder.toString();
+	}
+
+	@Override
+	public void setItems(List<ISelectedItem> items) {
+		this.selectedItems = items;
+		
 	}
 
 }
