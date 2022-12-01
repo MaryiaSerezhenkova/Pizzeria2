@@ -45,6 +45,7 @@ public class OrderDao implements IOrderDao {
 
 	private static final String DELETE_ROWS_SQL = "DELETE FROM app.selected_items WHERE order = ?;";
 
+
 	private final DataSource ds;
 
 	public OrderDao(DataSource ds) {
@@ -154,14 +155,67 @@ public class OrderDao implements IOrderDao {
 	
 
 	@Override
-	public IOrder update(long id, LocalDateTime dtUpdate, IOrder type) {
-		// TODO Auto-generated method stub
-		return null;
+	public IOrder update(long id, LocalDateTime dtUpdate, IOrder item) {
+		try (Connection conn = ds.getConnection();
+				PreparedStatement stm = conn.prepareStatement(UPDATE_SQL);
+				PreparedStatement stmRowsDel = conn.prepareStatement(DELETE_ROWS_SQL);
+				PreparedStatement stmRowsIns = conn.prepareStatement(INSERT_ROWS_SQL);) {
+			conn.setAutoCommit(false);
+			stm.setObject(1, item.getDtUpdate());
+			stm.setObject(2, item.getSelected());
+	
+			stm.setLong(3, id);
+			stm.setObject(4, dtUpdate);
+
+			int countUpdatedRows = stm.executeUpdate();
+
+			if (countUpdatedRows != 1) {
+				if (countUpdatedRows == 0) {
+					throw new IllegalArgumentException("Не смогли обновить какую либо запись");
+				} else {
+					throw new IllegalArgumentException("Обновили более одной записи");
+				}
+			}
+
+			stmRowsDel.setLong(1, item.getId());
+
+			stmRowsDel.executeUpdate();
+
+			for (ISelectedItem row : item.getSelected()) {
+				stmRowsIns.setLong(1, row.getRow().getId());
+				stmRowsIns.setInt(2, row.getCount());
+				stmRowsIns.setDouble(3, item.getId());
+
+				stmRowsIns.addBatch();
+			}
+
+			stmRowsIns.executeBatch();
+			conn.commit();
+			return read(id);
+		} catch (SQLException e) {
+			throw new RuntimeException("При сохранении данных произошла ошибка", e);
+		}
 	}
 
 	@Override
 	public void delete(long id, LocalDateTime dtUpdate) {
-		// TODO Auto-generated method stub
-		
-	}
+		 try (Connection conn = ds.getConnection();
+	             PreparedStatement stm = conn.prepareStatement(DELETE_SQL, Statement.RETURN_GENERATED_KEYS)
+	        ){
+	            stm.setLong(1, id);
+	            stm.setObject(2, dtUpdate);
+
+	            int countUpdatedRows = stm.executeUpdate();
+
+	            if(countUpdatedRows != 1){
+	                if(countUpdatedRows == 0){
+	                    throw new IllegalArgumentException("Не смогли удалить какую либо запись");
+	                } else {
+	                    throw new IllegalArgumentException("Удалили более одной записи");
+	                }
+	            }
+	        } catch (SQLException e){
+	            throw new RuntimeException("При сохранении данных произошла ошибка", e);
+	        }
+	    }
 }

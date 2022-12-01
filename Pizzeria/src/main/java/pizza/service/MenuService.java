@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import pizza.api.IMenu;
+import pizza.api.IMenuRow;
 import pizza.api.core.Menu;
 import pizza.api.core.MenuRow;
 import pizza.api.dto.MenuDTO;
 import pizza.api.mapper.MenuMapper;
+import pizza.api.mapper.MenuRowMapper;
 import pizza.api.validators.MenuValidator;
 import pizza.dao.api.IMenuDao;
 import pizza.service.api.IMenuService;
@@ -84,5 +86,10 @@ public class MenuService implements IMenuService {
 		readed.setEnabled(dto.isEnabled());
 
 		return menuDao.update(id, dtUpdate, readed);
+	}
+
+	@Override
+	public IMenuRow getRowById(long id) {
+		return MenuRowMapper.menuRowOutputMapping(this.menuDao.readByRowId(id));
 	}
 }

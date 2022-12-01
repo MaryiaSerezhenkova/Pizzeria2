@@ -2,16 +2,18 @@ package pizza.api;
 
 import java.time.LocalDateTime;
 
+
 /**
  * Квиток выдаваемый к заказу
  */
 public interface ITicket {
 
+
     /**
      * Уникальный номер заказа
      * @return
      */
-    String getNumber();
+    int getNumber();
 
     /**
      * Когда заказ получен
@@ -24,4 +26,11 @@ public interface ITicket {
      * @return
      */
     IOrder getOrder();
+
+	void setId(long id);
+	long getId();
+
+	void setDtCreate(LocalDateTime dtCreate);
+	void setNumber (int number);
+	void setOrder (long id);
 }

@@ -24,6 +24,11 @@ public class Ticket implements ITicket {
 		this.order = order;
 	}
 
+	public Ticket(int number, Long orderId) {
+		super();
+		this.number = number;
+	}
+
 	public long getId() {
 		return id;
 	}
@@ -53,11 +58,6 @@ public class Ticket implements ITicket {
 	}
 
 	@Override
-	public String getNumber() {
-		return null;
-	}
-
-	@Override
 	public LocalDateTime getCreatAt() {
 		return dtCreate;
 	}
@@ -75,6 +75,17 @@ public class Ticket implements ITicket {
 		builder.append(order);
 		builder.append("]");
 		return builder.toString();
+	}
+
+	@Override
+	public int getNumber() {
+		return number;
+	}
+
+	@Override
+	public void setOrder(long id) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

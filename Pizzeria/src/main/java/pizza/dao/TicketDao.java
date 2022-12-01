@@ -1,6 +1,5 @@
 package pizza.dao;
 
-import java.awt.MenuItem;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,59 +12,114 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import pizza.api.IOrder;
-import pizza.api.ISelectedItem;
 import pizza.api.ITicket;
-import pizza.api.core.Order;
-import pizza.api.core.PizzaInfo;
-import pizza.api.core.SelectedItem;
 import pizza.api.core.Ticket;
-import pizza.api.dto.TicketDTO;
-import pizza.service.api.ITicketDao;
+import pizza.dao.api.ITicketDao;
 
 public class TicketDao implements ITicketDao {
 
-    private static final String INSERT_TICKET_SQL = "INSERT INTO pizza_manager.ticket (order_id) VALUES (?);";
-    private static final String SELECT_TICKET_SQL = "SELECT id, order_id, creation_date, version " +
-            "FROM pizza_manager.ticket ORDER BY id;";
-    private static final String SELECT_TICKET_BY_ID_SQL = "SELECT id, order_id,  creation_date, version " +
-            "FROM pizza_manager.ticket WHERE id=?;";
-    private static final String SELECT_TICKET_ALL_DATA_SQL = "SELECT ord.id AS id, ord.creation_date AS cd, " +
-            "ord.version AS ver, t.id AS tid, t.creation_date AS tcd, t.version AS tver,si.id AS siid, menu_item_id, " +
-            "count ,si.creation_date AS sicd, si.version AS siiv, mi.id AS miid, price, pizza_info_id, mi.creation_date AS micd, " +
-            "mi.version AS miver, mi.menu_id AS meid, name, description, size, pi.creation_date AS picd, pi.version AS piv " +
-            "FROM pizza_manager.order_table AS ord INNER JOIN pizza_manager.ticket t on ord.id = t.order_id " +
-            "INNER JOIN pizza_manager.selected_item si on ord.id = si.order_id " +
-            "INNER JOIN pizza_manager.menu_item mi on mi.id = si.menu_item_id " +
-            "INNER JOIN pizza_manager.pizza_info pi on pi.id = mi.pizza_info_id WHERE ord.id=? ORDER BY siid, miid, pizza_info_id;";
-    private static final String DELETE_TICKET_SQL = "DELETE FROM pizza_manager.ticket WHERE id=?;";
-    private final DataSource dataSource;
+	private final DataSource ds;
 
-    public TicketDao(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
+	public TicketDao(DataSource ds) {
+		this.ds = ds;
+	}
+
+	private static final String INSERT_SQL = "INSERT INTO app.ticket(\r\n" + "	dt_create, \"number\", \"order\")\r\n"
+			+ "	VALUES (?, ?, ?);";
+
+	private static final String SELECT_BY_ID_SQL = "SELECT id, dt_create, \"number\", \"order\"\r\n"
+			+ "	FROM app.ticket" + "\tWHERE id = ?;";
+
+	private static final String SELECT_SQL = "SELECT id, dt_create, \"number\", \"order\"\r\n" + "	FROM app.ticket";
+
+	private static final String SELECT_BY_ORDER_ID_SQL = "SELECT ticket.id, ticket.dt_create, \"number\", \"order\"\r\n"
+			+ "	FROM app.ticket AS ticket\r\n" + "	JOIN app.order AS ord ON ticket.order=ord.id\r\n"
+			+ "	WHERE ticket.order=?;";
+	private static final String DELETE_SQL = "DELETE FROM app.ticket" + "\tWHERE id = ? and dt_update = ?;";
 
 	@Override
-	public ITicket create(TicketDTO dto) {
-		// TODO Auto-generated method stub
-		return null;
+	public ITicket create(ITicket item) {
+		try (Connection conn = ds.getConnection();
+				PreparedStatement stm = conn.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS)) {
+			stm.setObject(1, item.getCreatAt());
+			stm.setObject(2, item.getNumber());
+			stm.setObject(3, item.getOrder());
+			stm.executeUpdate();
+			ResultSet rs = stm.getGeneratedKeys();
+			if (rs.next()) {
+				item.setId(rs.getLong(1));
+			}
+			return item;
+		} catch (SQLException e) {
+			throw new RuntimeException("При сохранении данных произошла ошибка", e);
+		}
 	}
 
 	@Override
 	public ITicket read(long id) {
-		// TODO Auto-generated method stub
+		try (Connection conn = ds.getConnection(); PreparedStatement stm = conn.prepareStatement(SELECT_BY_ID_SQL)) {
+			stm.setObject(1, id);
+
+			try (ResultSet rs = stm.executeQuery()) {
+				while (rs.next()) {
+					return mapper(rs);
+				}
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException("При сохранении данных произошла ошибка", e);
+		}
+
 		return null;
 	}
 
 	@Override
 	public List<ITicket> get() {
+		List<ITicket> tickets = new ArrayList<>();
+		try (Connection con = ds.getConnection();
+
+				Statement stm = con.createStatement()) {
+			ResultSet rs = stm.executeQuery(SELECT_SQL);
+
+			while (rs.next()) {
+				tickets.add(mapper(rs));
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return tickets;
+	}
+
+	@Override
+	public ITicket update(long id, LocalDateTime dtUpdate, ITicket type) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public ITicket update(long id, LocalDateTime dtUpdate, TicketDTO dto) {
-		// TODO Auto-generated method stub
-		return null;
+	public void delete(long id) {
+		try (Connection conn = ds.getConnection();
+				PreparedStatement stm = conn.prepareStatement(DELETE_SQL, Statement.RETURN_GENERATED_KEYS)) {
+			stm.setLong(1, id);
+
+			int countUpdatedRows = stm.executeUpdate();
+
+			if (countUpdatedRows != 1) {
+				if (countUpdatedRows == 0) {
+					throw new IllegalArgumentException("Не смогли удалить какую либо запись");
+				} else {
+					throw new IllegalArgumentException("Удалили более одной записи");
+				}
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException("При сохранении данных произошла ошибка", e);
+		}
+	}
+
+	public ITicket mapper(ResultSet rs) throws SQLException {
+		return new Ticket(rs.getLong("id"), rs.getObject("dt_create", LocalDateTime.class), rs.getInt("number"),
+				(IOrder) rs.getObject("order"));
 	}
 
 	@Override
@@ -73,6 +127,20 @@ public class TicketDao implements ITicketDao {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public ITicket readByOrderId(long orderId) {
+		try (Connection conn = ds.getConnection(); PreparedStatement stm = conn.prepareStatement(SELECT_BY_ORDER_ID_SQL)) {
+			stm.setObject(1, orderId);
 
+			try (ResultSet rs = stm.executeQuery()) {
+				while (rs.next()) {
+					return mapper(rs);
+				}
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException("При сохранении данных произошла ошибка", e);
+		}
 
+		return null;
+	}
 }

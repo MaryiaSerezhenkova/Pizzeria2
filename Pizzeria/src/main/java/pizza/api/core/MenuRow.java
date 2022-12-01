@@ -9,7 +9,8 @@ public class MenuRow implements IMenuRow {
 	
 	private IPizzaInfo pizzaInfo;
 	private double price;
-
+	private long id;
+	
 	public MenuRow() {
 		super();
 	}
@@ -43,6 +44,11 @@ public class MenuRow implements IMenuRow {
 	public void setPrice(double price) {
 		this.price = price;
 
+	}
+
+	@Override
+	public long getId() {
+		return id;
 	}
 
 }

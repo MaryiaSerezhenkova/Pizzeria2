@@ -43,6 +43,14 @@ public class MenuDao implements IMenuDao {
 
 	private static final String DELETE_ROWS_SQL = "DELETE FROM app.menu_rows WHERE menu = ?;";
 	private final DataSource ds;
+	private static final String SELECT_ROW_BY_ID_SQL = "SELECT info.id, info.dt_create, info.dt_update, info.name, info.description, info.size, \n"
+			+ "rows.price, items.count\n"
+			+ "	FROM app.selected_items AS items\n"
+			+ "	JOIN app.order AS ord ON items.order=ord.id\n"
+			+ "	JOIN app.menu_rows AS rows ON items.row=rows.id\n"
+			+ "	JOIN app.pizza_info AS info ON rows.pizza=info.id\n"
+			+ "	JOIN app.menu AS men ON men.id=rows.menu\n"
+			+ "	WHERE rows.id=?;";
 
 	public MenuDao(DataSource ds) {
 		this.ds = ds;
@@ -219,5 +227,39 @@ public class MenuDao implements IMenuDao {
 		menu.setItems(rows);
 
 		return menu;
+	}
+	public IMenuRow rowMapper(ResultSet rsRows) throws SQLException {
+		IMenuRow row = new MenuRow();
+		while (rsRows.next()) {
+			PizzaInfo info = new PizzaInfo();
+			row.setPrice(rsRows.getDouble("row_price"));
+			row.setPizzaInfo(info);
+			info.setId(rsRows.getLong("info_id"));
+			info.setDtCreate(rsRows.getObject("info_dt_create", LocalDateTime.class));
+			info.setDtUpdate(rsRows.getObject("info_dt_update", LocalDateTime.class));
+			info.setName(rsRows.getString("info_name"));
+			info.setDescription(rsRows.getString("info_description"));
+			info.setSize(rsRows.getInt("info_size"));
+		}
+
+		return row;
+	}
+
+	public IMenuRow readByRowId(long id) {
+		try (Connection conn = ds.getConnection();
+
+				PreparedStatement stm = conn.prepareStatement(SELECT_ROW_BY_ID_SQL)) {
+			stm.setLong(1, id);
+			try (ResultSet rs = stm.executeQuery()) {
+				while (rs.next()) {
+
+					return rowMapper(rs);
+				}
+			}
+
+		} catch (SQLException e) {
+			throw new RuntimeException("При сохранении данных произошла ошибка", e);
+		}
+		return null;
 	}
 }

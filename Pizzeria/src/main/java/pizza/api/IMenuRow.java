@@ -11,6 +11,8 @@ public interface IMenuRow {
 
 	void setPrice(double price);
 
+	long getId();
+
 //	LocalDateTime getDtCreate();
 //
 //	void setDtCreate(LocalDateTime dtCreate);

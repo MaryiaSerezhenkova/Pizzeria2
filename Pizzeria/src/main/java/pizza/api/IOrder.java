@@ -3,27 +3,29 @@ package pizza.api;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
 /**
  * Заказ сформированный покупателем
  */
 public interface IOrder {
 
-	long getId();
 
-	LocalDateTime getDtCreate();
+		long getId();
 
-	void setDtCreate(LocalDateTime dtCreate);
+		LocalDateTime getDtCreate();
 
-	LocalDateTime getDtUpdate();
+		void setDtCreate(LocalDateTime dtCreate);
 
-	void setDtUpdate(LocalDateTime dtUpdate);
+		LocalDateTime getDtUpdate();
 
-	/**
-	 * Список выбранного для заказа
-	 * 
-	 * @return список выбранного
-	 */
-	List<ISelectedItem> getSelected();
+		void setDtUpdate(LocalDateTime dtUpdate);
 
-	void setItems(List<ISelectedItem> items);
-}
+		/**
+		 * Список выбранного для заказа
+		 * 
+		 * @return список выбранного
+		 */
+		List<ISelectedItem> getSelected();
+
+		void setItems(List<ISelectedItem> items);
+	}

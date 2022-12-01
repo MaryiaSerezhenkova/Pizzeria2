@@ -5,6 +5,7 @@ import java.util.List;
 
 import pizza.api.IOrder;
 import pizza.api.ISelectedItem;
+import pizza.api.dto.OrderDTO.Items;
 
 public class Order implements IOrder {
 
@@ -31,6 +32,10 @@ public class Order implements IOrder {
 		this.id = id;
 		this.dtCreate = dtCreate;
 		this.dtUpdate = dtUpdate;
+	}
+
+	public Order(List<Items> items) {
+		super();
 	}
 
 	public long getId() {
