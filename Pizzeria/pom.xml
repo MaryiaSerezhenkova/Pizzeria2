@@ -81,6 +81,11 @@
 			<artifactId>c3p0</artifactId>
 			<version>0.9.5.5</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>5.3.24</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -109,6 +114,8 @@
 						<artifactId>surefire-junit47</artifactId>
 						<version>3.0.0-M7</version>
 					</dependency>
+
+
 				</dependencies>
 			</plugin>
 			<plugin>

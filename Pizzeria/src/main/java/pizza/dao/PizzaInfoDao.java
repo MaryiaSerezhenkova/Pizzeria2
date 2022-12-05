@@ -32,8 +32,8 @@ public class PizzaInfoDao implements IPizzaInfoDao {
 
 	private final DataSource ds;
 
-	public PizzaInfoDao(DataSource instance) {
-		this.ds = instance;
+	public PizzaInfoDao(DataSource ds) {
+		this.ds = ds;
 	}
 
 	@Override
